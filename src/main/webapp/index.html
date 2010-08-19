@@ -21,6 +21,9 @@
     $.jQTouch({
     });
 
+    //iPhone の場合、click が発生する場合としない場合があるため tap に変更
+    var clickTrigger = ($.support.touch)? "tap": "click";
+
     $(function() {
       $("#music_list").empty();
 
@@ -45,7 +48,7 @@
      * 曲をクリックした際のイベント処理を設定する
      */
     function addMusicClickListener(id) {
-      $("#" + id + "_link").click(function(e) {
+      $("#" + id + "_link").bind(clickTrigger, function(e) {
         $("#" + id + "_list").empty();
 
         $.get("service/schedule/" + id, null, function(res2){
