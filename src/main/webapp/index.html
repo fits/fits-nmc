@@ -21,62 +21,94 @@
     $.jQTouch({
     });
 
-    //iPhone の場合、click が発生する場合としない場合があるため tap に変更
+    //iPhone の場合、tap イベントを使用するように変更
     var clickTrigger = ($.support.touch)? "tap": "click";
 
     $(function() {
+      $("#listUpdate").click(function(e) {
+        updateList(false);
+      });
+
+      updateList(true);
+    });
+
+    /**
+     * 新曲のリストを更新する
+     */
+    function updateList(useCache) {
+      var url = (useCache)? "service/list": "service/list_update";
+
       $("#music_list").empty();
 
-      $.get("service/list", null, function(res){
+      $.get(url, null, function(res){
         $.each(res, function() {
           var id = this.id;
 
-          var content = "<div id='" + id + "'>";
-          content += createToolbar(this.title, this.artist, "Back");
-          content += "<ul id='" + id + "_list'></ul>";
-          content += "</div>";
-          $(document.body).append(content);
+          if ($("#" + id).length == 0) {
+            var content = "<div id='" + id + "'>";
+            var buttonId = id + "_schUpdate";
+
+            content += createToolbar(this.title, this.artist, "Back", buttonId);
+            content += "<ul id='" + id + "_list'></ul>";
+            content += "</div>";
+
+            $(document.body).append(content);
+
+            $("#" + buttonId).click(function(e) {
+              updateSchedule(id, false)
+            });
+          }
 
           $("#music_list").append("<li class='arrow'><a id='" + id + "_link' href='#" + id + "'>" + this.title + " : " + this.artist + "</a></li>");
 
           addMusicClickListener(id);
         });
       }, "json");
-    });
+    }
 
     /**
      * 曲をクリックした際のイベント処理を設定する
      */
     function addMusicClickListener(id) {
       $("#" + id + "_link").bind(clickTrigger, function(e) {
-        $("#" + id + "_list").empty();
-
-        $.get("service/schedule/" + id, null, function(res2){
-          var html = "";
-
-          $.each(res2, function() {
-            html += "<li class='row'>";
-            html += "<label>" + this.date + "</label>";
-            html += "<label class='title'>" + this.title + "</label>";
-            html += "</li>";
-          });
-
-          if (html == "") {
-            html += "<li class='row'>nothing</li>";
-          }
-
-          $("#" + id + "_list").append(html);
-        }, "json");
+        updateSchedule(id, true);
       });
+    }
+
+    /**
+     * 指定曲の放送スケジュールを更新する
+     */
+    function updateSchedule(id, useCache) {
+      var url = (useCache)? "service/schedule/": "service/schedule_update/";
+
+      $("#" + id + "_list").empty();
+
+      $.get(url + id, null, function(res2){
+        var html = "";
+
+        $.each(res2, function() {
+          html += "<li class='row'>";
+          html += "<label>" + this.date + "</label>";
+          html += "<label class='title'>" + this.title + "</label>";
+          html += "</li>";
+        });
+
+        if (html == "") {
+          html += "<li class='row'>nothing</li>";
+        }
+
+        $("#" + id + "_list").append(html);
+      }, "json");
     }
 
     /**
      * Toolbar のタグを作成する
      */
-    function createToolbar(title, artist, back) {
+    function createToolbar(title, artist, back, buttonId) {
       var result = "<div class='toolbar'>";
       result += "<h1><small>" + title + "<br />" + artist + "</small></h1>";
       result += "<a class='button back' href='#" + back + "'>" + back + "</a>";
+      result += "<a id='" + buttonId + "' class='button' href='#'>Update</a>"
       result += "</div>";
       return result;
     }
@@ -87,6 +119,7 @@
   <div id="music" class="current">
     <div class="toolbar">
       <h1 id="pageTitle">New Music</h1>
+      <a id="listUpdate" class="button" href="#">Update</a>
     </div>
     <ul id="music_list" class="rounded"></ul>
   </div>

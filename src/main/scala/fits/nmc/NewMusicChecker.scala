@@ -6,21 +6,36 @@ import com.google.appengine.api.memcache._
 
 class NewMusicChecker extends ScalatraServlet {
 
-	val cacheExpireSeconds = 7200
+	//キャッシュの有効期間（秒）
+	val cacheExpireSeconds = 14400
 	val cache = MemcacheServiceFactory.getMemcacheService("fits.nmc")
 
 	before {
 		contentType = "application/json"
 	}
 
+	//新曲のリストを取得する（キャッシュあり）
 	get("/list") {
 		getCache("list", toJson(SstvChecker.getNewMusicList()))
 	}
 
+	//新曲のリストを取得する（キャッシュを常に更新）
+	get("/list_update") {
+		putCache("list", toJson(SstvChecker.getNewMusicList()))
+	}
+
+	//指定曲の放送スケジュールを取得する（キャッシュあり）
 	get("/schedule/:id") {
 		val id = params("id")
 		getCache("schedule-" + id, toJson(SstvChecker.getMusicProgramList(id)))
 	}
+
+	//指定曲の放送スケジュールを取得する（キャッシュを常に更新）
+	get("/schedule_update/:id") {
+		val id = params("id")
+		putCache("schedule-" + id, toJson(SstvChecker.getMusicProgramList(id)))
+	}
+
 
 	def toJson(list: Iterator[Any]): String = {
 		list.map {m => 
