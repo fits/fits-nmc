@@ -6,14 +6,16 @@
 
 ■ 準備
 
-  lib ディレクトリに以下の GAE/J SDK のファイルを配置。
+  カレントディレクトリに lib ディレクトリを作成し、
+  以下の GAE/J SDK の JARファイル（lib/user にある）を配置。
 
     ・appengine-api-1.0-sdk-1.3.5.jar
     ・appengine-api-labs-1.3.5.jar
     ・appengine-jsr107cache-1.3.5.jar
     ・jsr107cache-1.1.jar
 
-  src/main/webapp/js ディレクトリに jQtouch の以下のディレクトリを配置。
+  src/main/webapp/js ディレクトリを作成し、
+  jQtouch の以下のディレクトリを配置。
 
     ・jqtouch
     ・themes
@@ -21,7 +23,43 @@
 ■ ビルド
 
   環境変数 APPENGINE_SDK_HOME に GAE/J SDK のホームディレクトリを
-  設定した状態で sbt コマンドを実行（事前に sbt の実行環境を整えておく）
+  設定した状態で sbt コマンドを実行（事前に sbt の実行環境を整えておく）し、
+  update コマンド（Scalatra 等のライブラリ取得）と
+  prepare-webapp コマンド（コンパイルとWebアプリケーションの実行準備）を
+  実行する。
 
-    >sbt
+    fits-nmc> sbt
+    ・・・
+    > update
+    ・・・
+    > prepare-webapp
+    ・・・
+
+■ 動作確認
+
+  ・Jetty による動作確認（キャッシュが機能しない）
+
+      sbt コマンドが実行中の状態で、jetty-run を実行し、
+      Webブラウザで http://localhost:8080/index.html に接続
+      （Cache サービスが機能しない点に注意）
+
+        > jetty-run
+        ・・・
+
+  ・GAE/J SDK による動作確認
+
+      GAE/J SDK の dev_appserver コマンドに
+      target/scala_2.8.0/webapp を指定して実行し、
+      Webブラウザで http://localhost:8080/index.html に接続
+
+        fits-nmc> dev_appserver target\scala_2.8.0\webapp
+        ・・・
+
+■ GAE へのデプロイ
+
+  事前に src/main/webapp/WEB-INF/appengine-web.xml ファイルの
+  application 要素の内容を環境に合わせて変更しておき、
+  sbt コマンドが実行中の状態で appcfg-update を実行。
+  
+  > appcfg-update
 
