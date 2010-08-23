@@ -9,9 +9,9 @@
   カレントディレクトリに lib ディレクトリを作成し、
   以下の GAE/J SDK の JARファイル（lib/user にある）を配置。
 
-    ・appengine-api-1.0-sdk-1.3.5.jar
-    ・appengine-api-labs-1.3.5.jar
-    ・appengine-jsr107cache-1.3.5.jar
+    ・appengine-api-1.0-sdk-1.3.6.jar
+    ・appengine-api-labs-1.3.6.jar
+    ・appengine-jsr107cache-1.3.6.jar
     ・jsr107cache-1.1.jar
 
   src/main/webapp/js ディレクトリを作成し、
