@@ -1,6 +1,5 @@
 package fits.nmc
 
-import scala.util.parsing.json._
 import org.scalatra.ScalatraServlet
 import com.google.appengine.api.memcache._
 
