@@ -12,33 +12,31 @@ object MusicBookmark {
 	private val store = DatastoreServiceFactory.getDatastoreService()
 
 	def addBookmark(userId: String, musicId: String, title: String, artist: String) = {
-		val tr = store.beginTransaction()
-		val bkey = createBookmarkKey(userId)
+		using(store.beginTransaction()) {tr =>
+			val bkey = createBookmarkKey(userId)
 
-		try {
-			store.get(bkey)
+			try {
+				store.get(bkey)
+			}
+			catch {
+				case e: EntityNotFoundException => 
+					store.put(tr, new Entity(bkey))
+			}
+
+			val music = new Entity(musicKind, musicId, bkey)
+			music.setProperty(titleProperty, title)
+			music.setProperty(artistProperty, artist)
+
+			store.put(tr, music)
 		}
-		catch {
-			case e: EntityNotFoundException => 
-				store.put(tr, new Entity(bkey))
-		}
-
-		val music = new Entity(musicKind, musicId, bkey)
-		music.setProperty(titleProperty, title)
-		music.setProperty(artistProperty, artist)
-
-		store.put(tr, music)
-
-		tr.commit()
 	}
 
 	def removeBookmark(userId: String, musicId: String) = {
-		val tr = store.beginTransaction()
 
-		val mkey = createMusicKey(userId, musicId)
-		store.delete(mkey)
-
-		tr.commit()
+		using(store.beginTransaction()) {tr =>
+			val mkey = createMusicKey(userId, musicId)
+			store.delete(mkey)
+		}
 	}
 
 	def getBookmarkList(userId: String): Iterator[Music] = {
@@ -50,6 +48,18 @@ object MusicBookmark {
 			val title: String = et.getProperty(titleProperty)
 
 			Music(et.getKey().getName(), title, Artist("", artistName))
+		}
+	}
+
+	private def using(tr: Transaction)(f: Transaction => Unit) = {
+		try {
+			f(tr)
+			tr.commit()
+		}
+		catch {
+			case e: Exception => 
+				e.printStackTrace()
+				tr.rollback()
 		}
 	}
 
