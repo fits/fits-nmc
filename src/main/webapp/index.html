@@ -50,6 +50,7 @@
 
             content += createToolbar(this.title, this.artist, "Back", buttonId);
             content += "<ul id='" + id + "_list'></ul>";
+            content += "<a id='' class='whiteButton' href='#'>Add Bookmark</a>";
             content += "</div>";
 
             $(document.body).append(content);
@@ -108,7 +109,8 @@
       var result = "<div class='toolbar'>";
       result += "<h1><small>" + title + "<br />" + artist + "</small></h1>";
       result += "<a class='button back' href='#" + back + "'>" + back + "</a>";
-      result += "<a id='" + buttonId + "' class='button' href='#'>Update</a>"
+      result += "<a id='" + buttonId + "' class='button' href='#'>Update</a>";
+
       result += "</div>";
       return result;
     }
