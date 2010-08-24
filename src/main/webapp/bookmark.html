@@ -25,6 +25,20 @@
     var clickTrigger = ($.support.touch)? "tap": "click";
 
     $(function() {
+      var url = "service/bookmark";
+
+      $("#bookmark_list").empty();
+
+      $.get(url, null, function(res){
+        if (res) {
+          $.each(res, function() {
+            $("#bookmark_list").append("<li>" + this.title + " : " + this.artist + "</li>");
+          });
+        }
+        else {
+          alert("not login");
+        }
+      }, "json");
 
     });
 
