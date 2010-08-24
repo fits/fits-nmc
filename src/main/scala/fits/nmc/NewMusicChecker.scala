@@ -2,12 +2,14 @@ package fits.nmc
 
 import org.scalatra.ScalatraServlet
 import com.google.appengine.api.memcache._
+import com.google.appengine.api.users._
 
 class NewMusicChecker extends ScalatraServlet {
 
 	//キャッシュの有効期間（秒）
 	val cacheExpireSeconds = 14400
 	val cache = MemcacheServiceFactory.getMemcacheService("fits.nmc")
+	val users = UserServiceFactory.getUserService()
 
 	before {
 		contentType = "application/json"
@@ -35,6 +37,41 @@ class NewMusicChecker extends ScalatraServlet {
 		putCache("schedule-" + id, toJson(SstvChecker.getMusicProgramList(id)))
 	}
 
+	get("/bookmark") {
+		val userId = getCurrentUserId()
+
+		userId match {
+			case "" => "false"
+			case _ =>
+				toJson(MusicBookmark.getBookmarkList(userId))
+		}
+	}
+
+	post("/bookmark/add") {
+		val userId = getCurrentUserId()
+
+		userId match {
+			case "" => "false"
+			case _ =>
+				val musicId = params("id")
+				val title = params("title")
+				val artist = params("artist")
+				MusicBookmark.addBookmark(userId, musicId, title, artist)
+				"true"
+		}
+	}
+
+	post("/bookmark/del") {
+		val userId = getCurrentUserId()
+
+		userId match {
+			case "" => "false"
+			case _ => 
+				val musicId = params("id")
+				MusicBookmark.removeBookmark(userId, musicId)
+				"true"
+		}
+	}
 
 	def toJson(list: Iterator[Any]): String = {
 		list.map {m => 
@@ -54,11 +91,18 @@ class NewMusicChecker extends ScalatraServlet {
 		"{\"title\": \"" + p.title + "\", \"date\": \"" + p.date + "\"}"
 	}
 
+	private def getCurrentUserId(): String = {
+		users.getCurrentUser() match {
+			case null => ""
+			case u: User => u.getUserId()
+		}
+	}
+
 	/**
 	 * キャッシュから値を取得する。
 	 * キャッシュに無かった場合は valueProc を評価し、キャッシュに保存
 	 */
-	def getCache(key: String, valueProc: => String): String = {
+	private def getCache(key: String, valueProc: => String): String = {
 		cache.get(key) match {
 			case null => putCache(key, valueProc)
 			case s: String => s
@@ -68,7 +112,7 @@ class NewMusicChecker extends ScalatraServlet {
 	/**
 	 * キャッシュに値を保存する
 	 */
-	def putCache(key: String, value: String): String = {
+	private def putCache(key: String, value: String): String = {
 		cache.put(key, value, Expiration.byDeltaSeconds(cacheExpireSeconds))
 		value
 	}
