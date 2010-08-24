@@ -45,18 +45,28 @@
           var id = this.id;
 
           if ($("#" + id).length == 0) {
+            var title = this.title;
+            var artist = this.artist;
+
             var content = "<div id='" + id + "'>";
             var buttonId = id + "_schUpdate";
+            var addButtonId = id + "_add";
 
-            content += createToolbar(this.title, this.artist, "Back", buttonId);
+            content += createToolbar(title, artist, "Back", buttonId);
             content += "<ul id='" + id + "_list'></ul>";
-            content += "<a id='' class='whiteButton' href='#'>Add Bookmark</a>";
+            content += "<a id='" + addButtonId + "' class='whiteButton' href='#'>Add Bookmark</a>";
             content += "</div>";
 
             $(document.body).append(content);
 
+            //Updateボタン押下時の処理
             $("#" + buttonId).click(function(e) {
               updateSchedule(id, false)
+            });
+            
+            //Bookmark追加ボタン押下時の処理
+            $("#" + addButtonId).click(function(e) {
+              addToBookmark(id, title, artist);
             });
           }
 
@@ -99,6 +109,18 @@
         }
 
         $("#" + id + "_list").append(html);
+      }, "json");
+    }
+
+    /**
+     * Bookmark に登録する
+     */
+    function addToBookmark(id, title, artist) {
+      var params = {"id": id, "title": title, "artist": artist};
+
+      $.post("service/bookmark/add", params, function(res) {
+        var msg = (res)? "Bookmark登録に成功しました": "Bookmark登録に失敗しました";
+        alert(msg);
       }, "json");
     }
 
