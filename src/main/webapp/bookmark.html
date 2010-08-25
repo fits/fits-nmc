@@ -38,29 +38,33 @@
           var list = [];
 
           $.each(res, function() {
-            $("#bookmark_list").append("<li><div>" + this.title + " : " + this.artist + "</div><div class='schedule' id='" + this.id  + "'></div></li>");
-            
+            addToList(this.id, this.title, this.artist);
             list.push(this.id)
           });
           
-          updateSchedule(list);
+          updateSchedules(list);
         }
       }, "json");
     });
 
-    function updateSchedule(idList) {
+    function updateSchedules(idList) {
       window.setTimeout(function() {
         for (var i = 0; i < idList.length; i++) {
-          var id = idList[i];
-          var url = "service/schedule/" + id;
-
-          $.get(url, null, function(res){
-            $.each(res, function() {
-              $("#" + id).append(this.date + " : " + this.title + "<br />");
-            });
-          }, "json");
+          updateSchedule(idList[i]);
         }
       }, 100);
+    }
+
+    function updateSchedule(id) {
+      $.get("service/schedule/" + id, null, function(res){
+        $.each(res, function() {
+          $("#" + id).append(this.date + " : " + this.title + "<br />");
+        });
+      }, "json");
+    }
+
+    function addToList(id, title, artist) {
+      $("#bookmark_list").append("<li><div>" + title + " : " + artist + "</div><div class='schedule' id='" + id  + "'></div></li>");
     }
 
   </script>
