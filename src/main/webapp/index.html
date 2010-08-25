@@ -119,7 +119,7 @@
       var params = {"id": id, "title": title, "artist": artist};
 
       $.post("service/bookmark/add", params, function(res) {
-        var msg = (res)? "Bookmark登録に成功しました": "Bookmark登録に失敗しました";
+        var msg = (res)? "Success : add to Bookmark": "Failed : add to Bookmark";
         alert(msg);
       }, "json");
     }
@@ -143,7 +143,7 @@
   <div id="music" class="current">
     <div class="toolbar">
       <h1 id="pageTitle">New Music</h1>
-      <a class="button leftButton" href="bookmark.html">Bookmark</a>
+      <a class="button leftButton" href="/bookmark.html">Bookmark</a>
       <a id="listUpdate" class="button" href="#">Update</a>
     </div>
     <ul id="music_list" class="rounded"></ul>
