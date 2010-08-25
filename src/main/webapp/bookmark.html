@@ -14,15 +14,16 @@
     ul {
       font-size: 12px;
     }
+    .schedule {
+      padding-top: 5px;
+      padding-left: 20px;
+    }
   </style>
   <script src="js/jqtouch/jquery.1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="js/jqtouch/jqtouch.min.js" type="application/x-javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
     $.jQTouch({
     });
-
-    //iPhone の場合、tap イベントを使用するように変更
-    var clickTrigger = ($.support.touch)? "tap": "click";
 
     $(function() {
       var url = "service/bookmark";
@@ -34,13 +35,33 @@
           window.location.href = res["error"];
         }
         else {
+          var list = [];
+
           $.each(res, function() {
-            $("#bookmark_list").append("<li>" + this.title + " : " + this.artist + "</li>");
+            $("#bookmark_list").append("<li><div>" + this.title + " : " + this.artist + "</div><div class='schedule' id='" + this.id  + "'></div></li>");
+            
+            list.push(this.id)
           });
+          
+          updateSchedule(list);
         }
       }, "json");
-
     });
+
+    function updateSchedule(idList) {
+      window.setTimeout(function() {
+        for (var i = 0; i < idList.length; i++) {
+          var id = idList[i];
+          var url = "service/schedule/" + id;
+
+          $.get(url, null, function(res){
+            $.each(res, function() {
+              $("#" + id).append(this.date + " : " + this.title + "<br />");
+            });
+          }, "json");
+        }
+      }, 100);
+    }
 
   </script>
 </head>
