@@ -41,7 +41,8 @@ class NewMusicChecker extends ScalatraServlet {
 		val userId = getCurrentUserId()
 
 		userId match {
-			case "" => "false"
+			case "" => 
+				"{\"error\": \"" + users.createLoginURL("/bookmark.html") + "\"}"
 			case _ =>
 				toJson(MusicBookmark.getBookmarkList(userId))
 		}
