@@ -18,6 +18,11 @@
       padding-top: 5px;
       padding-left: 20px;
     }
+    .delButton {
+      position: static;
+      display: inline;
+      margin-right: 5px;
+    }
   </style>
   <script src="js/jqtouch/jquery.1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="js/jqtouch/jqtouch.min.js" type="application/x-javascript" charset="utf-8"></script>
@@ -64,7 +69,26 @@
     }
 
     function addToList(id, title, artist) {
-      $("#bookmark_list").append("<li><div>" + title + " : " + artist + "</div><div class='schedule' id='" + id  + "'></div></li>");
+      var liId = id + "_list";
+      var delId = id + "_del";
+
+      var content = "<li id='" + liId + "'>";
+      content += "<div>";
+      content += "<a class='button delButton' href='#' id='" + delId + "'>DEL</a>";
+      content += title + " : " + artist;
+      content += "</div>";
+      content += "<div class='schedule' id='" + id  + "'></div>";
+      content += "</li>";
+
+      $("#bookmark_list").append(content);
+
+      $("#" + delId).click(function(e) {
+        $.post("service/bookmark/del", {"id": id}, function(res) {
+          if(res) {
+            $("#" + liId).remove();
+          }
+        }, "json");
+      });
     }
 
   </script>
