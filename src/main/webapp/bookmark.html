@@ -91,10 +91,9 @@
       });
 
       $("div.touch").swipe(function(e, data) {
-        //左方向へのスワイプの場合に DEL ボタンを表示
-        if (data.direction == "left") {
-          $(e.target).children(".delButton").css("display", "inline");
-        }
+        //スワイプ方向で DEL ボタンの表示・非表示を切り替え
+        var displayStyle = (data.direction == "left")? "inline": "none";
+        $(e.target).children(".delButton").css("display", displayStyle);
       });
     }
 
