@@ -20,7 +20,7 @@
     }
     .delButton {
       position: static;
-      display: inline;
+      display: none;
       margin-right: 5px;
     }
   </style>
@@ -72,8 +72,8 @@
       var liId = id + "_list";
       var delId = id + "_del";
 
-      var content = "<li id='" + liId + "' class='touch'>";
-      content += "<div>";
+      var content = "<li id='" + liId + "'>";
+      content += "<div class='touch'>";
       content += "<a class='button delButton' href='#' id='" + delId + "'>DEL</a>";
       content += title + " : " + artist;
       content += "</div>";
@@ -90,9 +90,12 @@
         }, "json");
       });
 
-			$("li.touch").swipe(function(e, data) {
-				alert(data.direction);
-			});
+      $("div.touch").swipe(function(e, data) {
+        //左方向へのスワイプの場合に DEL ボタンを表示
+        if (data.direction == "left") {
+          $(e.target).children(".delButton").css("display", "inline");
+        }
+      });
     }
 
   </script>
