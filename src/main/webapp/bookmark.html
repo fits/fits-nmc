@@ -72,7 +72,7 @@
       var liId = id + "_list";
       var delId = id + "_del";
 
-      var content = "<li id='" + liId + "'>";
+      var content = "<li id='" + liId + "' class='touch'>";
       content += "<div>";
       content += "<a class='button delButton' href='#' id='" + delId + "'>DEL</a>";
       content += title + " : " + artist;
@@ -89,6 +89,10 @@
           }
         }, "json");
       });
+
+			$("li.touch").swipe(function(e, data) {
+				alert(data.direction);
+			});
     }
 
   </script>
