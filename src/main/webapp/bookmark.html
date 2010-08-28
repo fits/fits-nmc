@@ -47,6 +47,8 @@
             list.push(this.id)
           });
           
+          readyDelButton();
+          
           updateSchedules(list);
         }
       }, "json");
@@ -89,12 +91,21 @@
           }
         }, "json");
       });
+    }
 
-      $("div.touch").swipe(function(e, data) {
-        //スワイプ方向で DEL ボタンの表示・非表示を切り替え
-        var displayStyle = (data.direction == "left")? "inline": "none";
-        $(e.target).children(".delButton").css("display", displayStyle);
-      });
+    function readyDelButton() {
+      if ($.support.touch) {
+        //iPhone の場合はスワイプイベント処理を設定
+        $("div.touch").swipe(function(e, data) {
+          //スワイプ方向で DEL ボタンの表示・非表示を切り替え
+          var displayStyle = (data.direction == "left")? "inline": "none";
+          $(e.target).children(".delButton").css("display", displayStyle);
+        });
+      }
+      else {
+        //通常ブラウザの場合はDELボタンを常に表示
+        $(".delButton").css("display", "inline");
+      }
     }
 
   </script>
