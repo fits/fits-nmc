@@ -11,7 +11,7 @@ class NewMusicChecker extends ScalatraServlet {
 	val cache = MemcacheServiceFactory.getMemcacheService("fits.nmc")
 	val users = UserServiceFactory.getUserService()
 
-	before {
+	beforeAll {
 		contentType = "application/json"
 	}
 
