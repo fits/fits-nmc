@@ -8,20 +8,21 @@ case class Program(val title: String, val date: String)
 
 object SstvChecker {
 	val NewUrl = "http://www.spaceshowertv.com/newvideo/"
-	val ProgramUrl = "http://www.spaceshowertv.com/search/detail.cgi?ch=1&mu="
+	val ProgramUrl = "http://www.spaceshowertv.com/search/detail.cgi?ch=2&mu="
 
-	val NewP = """<p[^>]*><a.*onClick="open(Music|Artist)Win\('(\w+)',[^\)]*\);">(.*)</p>""".r
+	val NewP = """<a href="http://www.spaceshowertv.com/search/(detail|artist)\.cgi\?(mu|ac)=([^&]*)&ch=2">(.*)</a>""".r
+
 	val ProgP = """<ul>\s*<li><img src=\"img/sstv_new.gif\".*/></li>([^\\]*?)</ul>""".r
 	val ScheP = """<li>(.*)<br>\s*(.*)　\s*(.*)</li>""".r
 
 	def getNewMusicList(): Iterator[Music] = {
-		getNewMusicList(Source.fromURL(NewUrl, "Windows-31J"))
+		getNewMusicList(Source.fromURL(NewUrl).mkString)
 	}
 
-	def getNewMusicList(src: Source): Iterator[Music] = {
-		NewP.findAllIn(src.mkString).matchData.sliding(2, 2).map {m =>
-			val a = Artist(m(1).group(2), m(1).group(3))
-			Music(m(0).group(2), m(0).group(3), a)
+	def getNewMusicList(html: String): Iterator[Music] = {
+		NewP.findAllIn(html).matchData.sliding(2, 2).map {m =>
+			val a = Artist(m(1).group(3), m(1).group(4))
+			Music(m(0).group(3), m(0).group(4), a)
 		}
 	}
 
