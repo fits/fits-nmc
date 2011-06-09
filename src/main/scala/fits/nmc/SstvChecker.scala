@@ -15,12 +15,12 @@ object SstvChecker {
 	val ProgP = """</h5>\s*<dl>\s*<dt>(.*)</dt>\s*<dd>(.*)　\s*(.*)</dd>""".r
 
 	def getNewMusicList(): Iterator[Music] = {
-		parseNewMusicPage(Source.fromURL(NewUrl).mkString)
+		parseNewMusicPage(Source.fromURL(NewUrl, "UTF-8").mkString)
 	}
 
 	def getMusicProgramList(musicId: String): Iterator[Program] = {
 		val url = ProgramUrl + musicId
-		parseMusicProgramPage(Source.fromURL(url).mkString)
+		parseMusicProgramPage(Source.fromURL(url, "UTF-8").mkString)
 	}
 
 
