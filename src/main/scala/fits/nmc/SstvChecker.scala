@@ -12,7 +12,7 @@ object SstvChecker {
 
 	val NewP = """<a href="http://www.spaceshowertv.com/search/(detail|artist)\.cgi\?(mu|ac)=([^&]*)&ch=2">(.*)</a>""".r
 
-	val ProgP = """</h5>\s*<dl>\s*<dt>(.*)</dt>\s*<dd>(.*)　\s*(.*)</dd>""".r
+	val ProgP = """<dt>(.*)</dt>\s*<dd>(.*)　\s*(.*)</dd>""".r
 
 	def getNewMusicList(): Iterator[Music] = {
 		parseNewMusicPage(Source.fromURL(NewUrl, "UTF-8").mkString)

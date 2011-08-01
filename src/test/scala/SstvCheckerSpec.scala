@@ -37,7 +37,7 @@ class SstvCheckerSpec extends Specification {
 		val data = """
 			<dl>
 			<dt>test：</dt>
-			<dd>2011/06/22　aaaa</dd>
+			<dd>2011/06/22</dd>
 			</dl>
 			<div class="row">
 			<div class="onairInner">
@@ -77,4 +77,51 @@ class SstvCheckerSpec extends Specification {
 			p2.date must_== "2011/06/09 16:30～17:30"
 		}
 	}
+
+	"parseMusicProgramPage with 2 programs in dl" should {
+		val data = """
+			<dl>
+			<dt>test：</dt>
+			<dd>2011/06/22</dd>
+			</dl>
+			<div class="row">
+			<div class="onairInner">
+			<h5 class="ttl1">TV</h5>
+			<dl>
+				<dt>RECOMMEND</dt>
+				<dd>2011/06/08　
+				06:00～07:30</dd>
+				<dt>More Music</dt>
+				<dd>2011/08/03　
+				27:00～28:00</dd>
+			</dl>
+			<!-- / .onairInner --></div>
+			<div class="onairInner">
+			<h5 class="ttl2">TV Plus</h5>
+			<dl>
+				<dt>現時点でのオンエア予定はありません</dt>
+			</dl>
+			<!-- / .onairInner --></div>
+			<!-- / .row --></div>
+		"""
+
+		val progList = SstvChecker.parseMusicProgramPage(data).toList
+
+		"two programs" in {
+			progList must have size(2)
+		}
+
+		"first program" in {
+			val p1 = progList.head
+			p1.title must_== "RECOMMEND"
+			p1.date must_== "2011/06/08 06:00～07:30"
+		}
+
+		"second program" in {
+			val p2 = progList.last
+			p2.title must_== "More Music"
+			p2.date must_== "2011/08/03 27:00～28:00"
+		}
+	}
+
 }
